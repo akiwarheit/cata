@@ -108,6 +108,12 @@ function maxIncrease(revenue: number[]): number {
   return maxIncrease;
 }
 
+/**
+ * LRU Cache
+ *
+ * https://leetcode.com/problems/lru-cache/description/
+ */
+
 function lruCache(capacity: number) {
   const cache = new Map<number, number>();
   const order: number[] = [];
