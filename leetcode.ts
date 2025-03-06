@@ -255,3 +255,28 @@ function areAnagrams2(str1: string, str2: string): boolean {
 function cleanString(str: string): string {
   return str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
 }
+
+function longestPalindrome(s) {
+  const n = s.length;
+  if (n === 0) return "";
+  let start = 0, maxLen = 1;
+
+  for (let i = 0; i < n; i++) {
+      for (let j = 0; j <= 1; j++) {
+          let low = i;
+          let high = i + j; 
+
+          while (low >= 0 && high < n && s[low] === s[high]) {
+              const currLen = high - low + 1;
+              if (currLen > maxLen) {
+                  start = low;
+                  maxLen = currLen;
+              }
+              low--;
+              high++;
+          }
+      }
+  }
+
+  return s.substring(start, start + maxLen);
+}
