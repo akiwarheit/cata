@@ -94,18 +94,47 @@ function findMedianSortedArrays(nums1: number[], nums2: number[]): number {
 
 /**
  * Give an array of revenue, get the max increase within this array. For example, an array [10,2,24,54,44]. The largest increase over any period of time would be 52.
+ * 
+ * https://leetcode.com/problems/best-time-to-buy-and-sell-stock/description/
  */
-function maxIncrease(revenue: number[]): number {
-  let maxIncrease = 0;
-  for (let x = 0; (x += 1); x += 1) {
-    for (let y = x + 1; (y += 1); y += 1) {
-      const increase = revenue[y] - revenue[x];
-      if (increase > maxIncrease) {
-        maxIncrease = increase;
-      }
-    }
+function maxProfit(prices: number[]): number {
+  if (prices.length <= 1) return 0;
+  
+  let minPrice = prices[0];
+  let maxProfit = 0;
+  
+  for (let i = 1; i < prices.length; i++) {
+    // Update maxProfit if selling at current price would yield a higher profit
+    const currentProfit = prices[i] - minPrice;
+    maxProfit = Math.max(maxProfit, currentProfit);
+    
+    // Update minPrice if current price is lower
+    minPrice = Math.min(minPrice, prices[i]);
   }
-  return maxIncrease;
+  
+  return maxProfit;
+};
+
+/**
+ * Alternative implementation of the Best Time to Buy and Sell Stock problem
+ * with O(n) time complexity
+ */
+function maxProfit2(prices: number[]): number {
+  if (prices.length <= 1) return 0;
+  
+  let minPrice = prices[0];
+  let maxProfit = 0;
+  
+  for (let i = 1; i < prices.length; i++) {
+    // Update maxProfit if selling at current price would yield a higher profit
+    const currentProfit = prices[i] - minPrice;
+    maxProfit = Math.max(maxProfit, currentProfit);
+    
+    // Update minPrice if current price is lower
+    minPrice = Math.min(minPrice, prices[i]);
+  }
+  
+  return maxProfit;
 }
 
 /**
@@ -114,6 +143,43 @@ function maxIncrease(revenue: number[]): number {
  * https://leetcode.com/problems/lru-cache/description/
  */
 
+class LRUCache {
+  private cache: Map<number, number>;
+  private order: number[];
+  private capacity: number;
+
+  constructor(capacity: number) {
+    this.cache = new Map<number, number>();
+    this.order = [];
+    this.capacity = capacity;
+  }
+  
+  get(key: number): number {
+    if (this.cache.has(key)) {
+      this.order.splice(this.order.indexOf(key), 1);
+      this.order.push(key);
+      return this.cache.get(key)!;
+    }
+    return -1;
+  }
+
+  put(key: number, value: number): void {
+    if (this.cache.has(key)) {
+      this.order.splice(this.order.indexOf(key), 1);
+    } else if (this.cache.size === this.capacity) {
+      this.cache.delete(this.order.shift()!);
+    }
+    this.cache.set(key, value);
+    this.order.push(key);
+  }
+}
+
+/**
+ * LRU Cache implementation using function
+ * 
+ * @param capacity 
+ * @returns 
+ */
 function lruCache(capacity: number) {
   const cache = new Map<number, number>();
   const order: number[] = [];
@@ -138,4 +204,54 @@ function lruCache(capacity: number) {
       order.push(key);
     },
   };
+}
+
+/**
+ * Given two strings, write a function to check if they are anagrams of each other.
+ * For example, "listen" and "silent" are anagrams of each other.
+ * 
+ * https://leetcode.com/problems/valid-anagram/description/
+ */
+function areAnagrams(str1: string, str2: string): boolean {
+  // Clean both strings
+  const cleaned1 = cleanString(str1);
+  const cleaned2 = cleanString(str2);
+  
+  // Early return if lengths are different
+  if (cleaned1.length !== cleaned2.length) {
+    return false;
+  }
+  
+  // Count character frequencies using a map
+  const charCount = new Map<string, number>();
+  
+  // Count characters in first string
+  for (const char of cleaned1) {
+    charCount.set(char, (charCount.get(char) || 0) + 1);
+  }
+  
+  // Check characters in second string
+  for (const char of cleaned2) {
+    const count = charCount.get(char);
+    
+    // If character doesn't exist or count is 0, not an anagram
+    if (!count) {
+      return false;
+    }
+    
+    // Decrement count
+    charCount.set(char, count - 1);
+  }
+  
+  return true;
+}
+
+function areAnagrams2(str1: string, str2: string): boolean {
+  const sortedStr1 = str1.split("").sort().join("");
+  const sortedStr2 = str2.split("").sort().join("");
+  return sortedStr1 === sortedStr2;
+}
+
+function cleanString(str: string): string {
+  return str.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
 }
